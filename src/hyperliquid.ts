@@ -1,7 +1,7 @@
-import { FordefiWeb3Provider, EvmChainId } from '@fordefi/web3-provider';
+import { FordefiWeb3Provider, EvmChainId, FordefiProviderConfig } from '@fordefi/web3-provider';
 import { ethers } from 'ethers';
+import { ProviderConnectInfo } from 'viem'
 import * as hl from "@nktkas/hyperliquid";
-import { FordefiProviderConfig } from '@fordefi/web3-provider';
 import dotenv from 'dotenv';
 import fs from 'fs'
 
@@ -22,20 +22,28 @@ let fordefiProvider: FordefiWeb3Provider | null = null;
 let provider: ethers.providers.Web3Provider | null = null;
 
 // Function to get or create the provider
-function getProvider() {
+async function getProvider() {
     if (!fordefiProvider) {
         fordefiProvider = new FordefiWeb3Provider(fordefiConfig);
+        // Callback to act upon a `connect` event
+        const onConnect = (result: any) => {
+            console.log(`Connected to chain: ${result.chainId}`);
+        }
+        // Subscribe using a callback
+        fordefiProvider.on('connect', onConnect);
+        // Wait for connection
+        await new Promise<void>(resolve => {
+            const onFirstConnect = (result: any) => {
+                resolve();
+                try {
+                    fordefiProvider?.removeListener('connect', onFirstConnect);
+                } catch (e) {
+                }
+            };
+            fordefiProvider!.on('connect', onFirstConnect);
+        });
+        
         provider = new ethers.providers.Web3Provider(fordefiProvider);
-        
-        // Set up connection event handling once
-        provider.on('connect', (result: any) => {
-            console.log(`Connected to chain: ${result}`);
-        });
-        
-        provider.on('disconnect', (error: any) => {
-            console.log(`Provider disconnected: ${error}`);
-            // Optional: You could implement reconnection logic here
-        });
     }
     
     return provider;
@@ -44,7 +52,7 @@ function getProvider() {
 async function main() {
     try {
         // Get the singleton provider
-        const provider = getProvider();
+        const provider = await getProvider();
         if (!provider) {
             throw new Error("Failed to initialize provider");
         }
@@ -58,7 +66,8 @@ async function main() {
                     ...domain,
                     chainId: fordefiConfig.chainId
                 };
-                return provider.getSigner()._signTypedData(
+                const signer = await provider.getSigner();
+                return signer._signTypedData(
                     modifiedDomain,
                     types,
                     value
