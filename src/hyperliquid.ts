@@ -1,6 +1,5 @@
 import { FordefiWeb3Provider, EvmChainId, FordefiProviderConfig } from '@fordefi/web3-provider';
 import { ethers } from 'ethers';
-import { ProviderConnectInfo } from 'viem'
 import * as hl from "@nktkas/hyperliquid";
 import dotenv from 'dotenv';
 import fs from 'fs'
@@ -17,18 +16,18 @@ const fordefiConfig: FordefiProviderConfig = {
   skipPrediction: false 
 };
 
-// Create a singleton provider
+// Define provider
 let fordefiProvider: FordefiWeb3Provider | null = null;
 let provider: ethers.providers.Web3Provider | null = null;
 
-// Function to get or create the provider
+// Function to get/create the provider
 async function getProvider() {
     if (!fordefiProvider) {
         fordefiProvider = new FordefiWeb3Provider(fordefiConfig);
         // Callback to act upon a `connect` event
         const onConnect = (result: any) => {
             console.log(`Connected to chain: ${result.chainId}`);
-        }
+        };
         // Subscribe using a callback
         fordefiProvider.on('connect', onConnect);
         // Wait for connection
@@ -55,9 +54,11 @@ async function main() {
         const provider = await getProvider();
         if (!provider) {
             throw new Error("Failed to initialize provider");
-        }
+        };
 
+        // Instanciate transport
         const transport = new hl.HttpTransport();
+
         // This custom signer ensures we're using the correct chainId to construct the message we'll sign
         const customSigner = {
             getAddress: async () => fordefiConfig.address,
@@ -84,13 +85,13 @@ async function main() {
 
         // Account clearinghouse state
         const result = await client.withdraw3({
-            destination: fordefiConfig.address, // Withdraw funds to your address
+            destination: fordefiConfig.address, // Withdraw funds to your Fordefi EVM vault
             amount: "6", // 6 USD
         });
         console.log("Withdrawal successful:", result);
         
     } catch (error: any) {
-        // Simple error handler that provides useful information
+
         const errorMessage = error.message || String(error);
         
         if (errorMessage.includes("Insufficient balance")) {
@@ -102,7 +103,6 @@ async function main() {
         }
     }
 }
-
 main().catch(error => {
     console.error("Unhandled error:", error);
 });
