@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "deposit": "npx ts-node src/deposit.ts",
     "hl": "npx ts-node src/run.ts"
   },
   "keywords": [],

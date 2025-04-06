@@ -1,6 +1,6 @@
 import { EvmChainId, FordefiProviderConfig } from '@fordefi/web3-provider';
-import dotenv from 'dotenv';
 import fs from 'fs';
+import dotenv from 'dotenv';
 
 dotenv.config()
 
@@ -21,5 +21,5 @@ export const fordefiConfig: FordefiProviderConfig = {
 
 export const hyperliquidConfig: HyperliquidConfig = {
     destination: fordefiConfig.address, // Change to your destination address
-    amount: "6"
+    amount: "5"
 };
