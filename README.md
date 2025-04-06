@@ -1,12 +1,12 @@
 # Hyperliquid-Fordefi Integration
 
-A TypeScript application for interacting with Hyperliquid's DeFi protocol through Fordefi.
+A TypeScript application for interacting with Hyperliquid's DEX through Fordefi.
 
 ## Overview
 
-This application enables secure interactions with the Hyperliquid protocol using Fordefi's enterprise-grade wallet infrastructure. It provides functionality for:
+This application enables secure interactions with the Hyperliquid L1 DEX from a Fordefi EVM Vault. It provides functionality for:
 
-- Withdrawing funds from Hyperliquid to specified Ethereum addresses
+- Withdrawing funds from Hyperliquid to your Fordefi EVM Vault
 - Sending USDC within the Hyperliquid ecosystem
 
 ## Prerequisites
@@ -76,7 +76,7 @@ First, ensure that your Fordefi API Signer is running
 
 ### Withdraw funds from Hyperliquid
 
-To withdraw funds from Hyperliquid to the specified destination address:
+To withdraw funds from Hyperliquid to your Fordefi EVM Vault:
 
 ```bash
 npm run hl
@@ -86,7 +86,18 @@ The default behavior is to execute the `withdraw3` function with the configurati
 
 ### Send USDC within Hyperliquid
 
-To send USDC to another address within Hyperliquid, modify the `main()` function in `src/run.ts`:
+To send USDC to another address within Hyperliquid, 
+
+1. Modify the `destination` field in `src/config.ts`:
+
+```typescript
+export const hyperliquidConfig: HyperliquidConfig = {
+    destination: "0x...", // Change to your destination address
+    amount: "1"
+};
+```
+
+2. Modify the `main()` function in `src/run.ts`:
 
 ```typescript
 async function main(){
