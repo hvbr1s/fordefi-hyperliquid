@@ -5,8 +5,8 @@ import fs from 'fs';
 dotenv.config()
 
 export interface HyperliquidConfig { // Customize this interface as needed
-    amount?: string; 
-    destination?: `0x${string}`
+    destination?: `0x${string}`;
+    amount?: string
 };
 
 // Configure the Fordefi provider
@@ -20,6 +20,6 @@ export const fordefiConfig: FordefiProviderConfig = {
 };
 
 export const hyperliquidConfig: HyperliquidConfig = {
-    destination: "0x...", // Change to your destination address
+    destination: fordefiConfig.address, // Change to your destination address
     amount: "6"
 };
