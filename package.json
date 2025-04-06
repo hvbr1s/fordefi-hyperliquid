@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "hl": "npx ts-node src/hyperliquid.ts"
+    "hl": "npx ts-node src/run.ts"
   },
   "keywords": [],
   "author": "",
